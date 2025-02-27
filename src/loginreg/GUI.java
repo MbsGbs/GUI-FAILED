@@ -20,19 +20,26 @@ public class GUI extends javax.swing.JFrame {
  public GUI() {
       initComponents(); 
  }
- static String status;
  
-  public static boolean loginAcc(String username, String password){ 
+ 
+ static String status;
+
+ 
+ public static boolean loginAcc(String username, String password){ 
 dbconnector connector = new dbconnector(); 
 try{ 
  String query = "SELECT * FROM tbl_user WHERE u_username ="+username+"  AND "
          + "u_password ="+password+"";
 ResultSet resultSet = connector.getData(query); 
-return resultSet.next(); 
-}catch (SQLException ex) { 
-return false; 
-} 
+if(resultSet.next()){
+
 }
+}catch (SQLException ex) { 
+ 
+} 
+return false;
+ }
+
  /**
   * This method is called from within the constructor to initialize the form.
   * WARNING: Do NOT modify this code. The content of this method is always
