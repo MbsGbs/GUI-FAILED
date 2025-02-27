@@ -10,44 +10,54 @@ import java.sql.Statement;
 
 public class dbconnector {
   
- private Connection connect;
- 
-        public dbconnector(){
-            try{
-                connect = DriverManager.getConnection("jdbc:mysql://localhost:3307/tuah");
-            }catch(SQLException ex){
-                    System.out.println("Can't connect to database: "+ex.getMessage());
-            }
+ private Connection connect; 
+    
+    public dbconnector(){
+    try {
+        // Ensure the URL, username, and password are correct
+        connect = DriverManager.getConnection("jdbc:mysql://localhost:3306/medc", "root", "");
+        System.out.println("Connected to the database.");
+    } catch (SQLException ex) {
+        System.out.println("Failed to connect to the database:");
+        ex.printStackTrace();
+    }
+}
+    
+    // Function to retrieve data
+    public ResultSet getData(String sql) throws SQLException {
+        Statement stmt = connect.createStatement();
+        ResultSet rst = stmt.executeQuery(sql);
+        return rst;
+    }
+    
+    // Getter for the connection object
+    public Connection getConnection() {
+        return connect;
+    }
+    
+  // Function to save data using PreparedStatement
+public boolean insertData(String sql, String... params) {
+    try {
+        PreparedStatement pst = connect.prepareStatement(sql);
+        for (int i = 0; i < params.length; i++) {
+            pst.setString(i + 1, params[i]);
         }
-       //Function to retrieve data
-        public ResultSet getData(String sql) throws SQLException{
-            Statement stmt = connect.createStatement();
-            ResultSet rst = stmt.executeQuery(sql);
-            return rst;
-        }
+        pst.executeUpdate();
+        System.out.println("Inserted Successfully!");
+        pst.close();
+        return true;
+    } catch (SQLException ex) {
+        System.out.println("Connection Error: " + ex);
+        return false;
+    }
+}
 
- Object getConnection() {
-  throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
- }
+// Function to check if an email or username already exists
+public boolean isDuplicate(String email, String username) {
+    System.out.println("Checking for duplicate email: " + email + " and username: " + username);
+    // Database query here...
+    return false;  // For debugging purposes
+}
 
-  //Function to save data
-        public int insertData(String sql){
-            int result;
-            try{
-                PreparedStatement pst = connect.prepareStatement(sql);
-                pst.executeUpdate();
-                System.out.println("Inserted Successfully!");
-                pst.close();
-                result =1;
-            }catch(SQLException ex){
-                System.out.println("Connection Error: "+ex);
-                result =0;
-            }
-            return result;
-        }
-
- public boolean insertData(String sql, String text, String text0, String text1, String text2, String text3, String text4, String toString, String pending) {
-  throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
- }
- 
+    
 }

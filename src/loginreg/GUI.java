@@ -20,6 +20,8 @@ public class GUI extends javax.swing.JFrame {
  public GUI() {
       initComponents(); 
  }
+ static String status;
+ 
   public static boolean loginAcc(String username, String password){ 
 dbconnector connector = new dbconnector(); 
 try{ 
@@ -178,10 +180,14 @@ Login.addActionListener(new java.awt.event.ActionListener() {
  private void LoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoginActionPerformed
   
   if(loginAcc(user.getText(),pass.getText())){
-   JOptionPane.showMessageDialog(null,"Login Success");
-   Admindashb ads = new Admindashb ();
-   ads.setVisible(true);
-   this.dispose();
+      if(!status.equals("Active")){
+   JOptionPane.showMessageDialog(null,"in-Active acc contact admin");       
+      }else{
+          JOptionPane.showMessageDialog(null,"Login Success");
+            Admindashb ads = new Admindashb ();
+            ads.setVisible(true);
+            this.dispose();
+      }
   }else{  
    JOptionPane.showMessageDialog(null,"Ning Kaon naka?");
   }

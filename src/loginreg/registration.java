@@ -280,93 +280,95 @@ public class registration extends javax.swing.JFrame {
   setLocationRelativeTo(null);
  }// </editor-fold>//GEN-END:initComponents
 private boolean isValidEmail(String email) {
+   
     // Regular expression to match a basic email pattern
     String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
     Pattern pattern = Pattern.compile(emailRegex);
     Matcher matcher = pattern.matcher(email);
     return matcher.matches();
+
 }
 
  private void SignActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SignActionPerformed
-dbconnector dbc = new dbconnector();
+    dbconnector dbc = new dbconnector();
 
-String sql = "INSERT INTO tbl_user (u_fname, u_lname, u_email, u_contact, u_username, u_password, u_type, u_status) "
-           + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    String sql = "INSERT INTO table_user (u_fname, u_lname, u_email, u_contact, u_username, u_password, u_type, u_status) "
+               + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-boolean isInserted = dbc.insertData(sql, 
-    fn.getText(), 
-    ln.getText(), 
-    e.getText(), 
-    num.getText(), 
-    un.getText(), 
-    pass.getText(), 
-    ut.getSelectedItem().toString(), 
-    "Pending"
-);
+    boolean isInserted = dbc.insertData(sql, 
+        fn.getText(), 
+        ln.getText(), 
+        e.getText(), 
+        num.getText(), 
+        un.getText(), 
+        pass.getText(), 
+        ut.getSelectedItem().toString(), 
+        "Pending"
+    );
 
-if (isInserted) {
-    JOptionPane.showMessageDialog(null, "Success");
-    GUI gui = new GUI(); // Fixed GUI instantiation
-    gui.setVisible(true);
-    this.dispose(); // Ensure `this` refers to a JFrame
-}else{
- JOptionPane.showMessageDialog(null,"Connection Error");
-}
+    if (isInserted) {
+        JOptionPane.showMessageDialog(null, "Registration Successful!");
+        GUI gui = new GUI(); // Open the main application window
+        gui.setVisible(true);
+        this.dispose(); // Close the registration window
+    } else {
+        JOptionPane.showMessageDialog(null, "Connection Error");
+    }
  }//GEN-LAST:event_SignActionPerformed
 
  private void SignMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_SignMouseClicked
- String firstName = fn.getText().trim();
+                                
+    String firstName = fn.getText().trim();
     String lastName = ln.getText().trim();
     String userEmail = e.getText().trim();
     String contactNumber = num.getText().trim();
     String userName = un.getText().trim();
     String userPassword = pass.getText().trim();
-    
+
     // Validate First Name, Last Name, Username, and Password
     if (firstName.isEmpty() || lastName.isEmpty() || userEmail.isEmpty() || contactNumber.isEmpty() || userName.isEmpty() || userPassword.isEmpty()) {
+        System.out.println("Validation failed: One or more fields are empty.");
         JOptionPane.showMessageDialog(this, "All fields are required.");
-        return;
+        return;  // Stop execution here if validation fails
     }
 
     // Validate Email format using regex
     if (!isValidEmail(userEmail)) {
+        System.out.println("Validation failed: Invalid email format.");
         JOptionPane.showMessageDialog(this, "Please enter a valid email address.");
-        return;
+        return;  // Stop execution here if validation fails
     }
 
     // Validate Password length (at least 8 characters)
     if (userPassword.length() < 8) {
+        System.out.println("Validation failed: Password too short.");
         JOptionPane.showMessageDialog(this, "Password must be at least 8 characters long.");
-        return;
+        return;  // Stop execution here if validation fails
     }
 
-    // Validate Contact Number (should contain only digits)
-    // Validate phone number length
+    // Validate Contact Number (must be exactly 11 digits and contain only numbers)
     if (!contactNumber.matches("\\d{11}")) {
-        JOptionPane.showMessageDialog(this, "Contact number must be exactly 11 digits.", "Validation Error", JOptionPane.ERROR_MESSAGE);
-        return;
+        System.out.println("Validation failed: Invalid contact number.");
+        JOptionPane.showMessageDialog(this, "Contact number must be exactly 11 digits and contain only numbers.", "Validation Error", JOptionPane.ERROR_MESSAGE);
+        return;  // Stop execution here if validation fails
     }
 
-    // Check for duplicate email or username
-    if (registeredEmails.contains(userEmail)) {
-        JOptionPane.showMessageDialog(this, "This email is already registered.");
-        return;
+    // Check for duplicate email or username in the database
+    dbconnector dbc = new dbconnector();
+    if (dbc.isDuplicate(userEmail, userName)) {
+        System.out.println("Validation failed: Duplicate email or username.");
+        JOptionPane.showMessageDialog(this, "This email or username is already registered.");
+        return;  // Stop execution here if validation fails
     }
 
-    if (registeredUsernames.contains(userName)) {
-        JOptionPane.showMessageDialog(this, "This username is already taken.");
-        return;
-    }
+    // If all validations pass, proceed with registration
+    System.out.println("Validation passed, proceeding with registration.");
+    SignActionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Sign"));
 
-    // Register the user
-    registeredEmails.add(userEmail);
-    registeredUsernames.add(userName);
-
-    JOptionPane.showMessageDialog(this, "Registration Successful!");
-
-    // Open the GUI and dispose of the registration window
     new GUI().setVisible(true);
     this.dispose();
+
+
  }//GEN-LAST:event_SignMouseClicked
 
  private void CancelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_CancelMouseClicked
